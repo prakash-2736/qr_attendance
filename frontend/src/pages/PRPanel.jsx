@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 import {
   QrCode,
   Users,
@@ -205,7 +207,7 @@ const PRPanel = () => {
               <div className="absolute w-72 h-72 rounded-full animate-glow" />
               <div className="relative bg-white rounded-2xl p-3 shadow-lg border border-slate-100">
                 <img
-                  src={`http://localhost:5000/api/qr/${selectedMeeting.qrToken}`}
+                  src={`${API_URL}/qr/${selectedMeeting.qrToken}`}
                   alt="QR Code"
                   className="w-64 h-64"
                 />

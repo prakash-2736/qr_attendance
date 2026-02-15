@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 import {
   FileBarChart,
   Download,
@@ -59,7 +61,7 @@ const Reports = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/attendance/export/${selectedMeeting}`,
+        `${API_URL}/attendance/export/${selectedMeeting}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const blob = await res.blob();
@@ -79,7 +81,7 @@ const Reports = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/attendance/export-excel/${selectedMeeting}`,
+        `${API_URL}/attendance/export-excel/${selectedMeeting}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const blob = await res.blob();
