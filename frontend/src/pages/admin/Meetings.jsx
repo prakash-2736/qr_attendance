@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import {
@@ -341,10 +342,10 @@ const Meetings = () => {
       )}
 
       {/* Create Meeting Modal */}
-      {showCreate && (
+      {showCreate && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-backdrop">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl animate-scale-in">
-            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
               <h2 className="text-lg font-semibold text-slate-800">
                 Create Meeting
               </h2>
@@ -356,23 +357,25 @@ const Meetings = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="p-6 space-y-5">
+            <form onSubmit={handleCreate} className="p-6 space-y-5 overflow-y-auto">
+              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Title
+                  Meeting Title
                 </label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Weekly Standup"
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700 placeholder:text-slate-400"
                 />
               </div>
 
+              {/* Type */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Type
+                  Meeting Type
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {["offline", "online"].map((t) => (
@@ -380,16 +383,16 @@ const Meetings = () => {
                       key={t}
                       type="button"
                       onClick={() => setForm({ ...form, type: t })}
-                      className={`p-3 rounded-xl border text-center transition-all font-medium capitalize ${
+                      className={`flex items-center justify-center gap-2 p-3 rounded-xl border transition-all font-medium capitalize ${
                         form.type === t
-                          ? "bg-indigo-50 border-indigo-300 text-indigo-700"
-                          : "border-slate-200 text-slate-500 hover:border-slate-300"
+                          ? "bg-indigo-50 border-indigo-300 text-indigo-700 ring-1 ring-indigo-200"
+                          : "border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
                       {t === "online" ? (
-                        <Wifi className="w-5 h-5 mx-auto mb-1" />
+                        <Wifi className="w-4 h-4" />
                       ) : (
-                        <WifiOff className="w-5 h-5 mx-auto mb-1" />
+                        <WifiOff className="w-4 h-4" />
                       )}
                       {t}
                     </button>
@@ -397,7 +400,8 @@ const Meetings = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Start & End Time */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Start Time
@@ -408,7 +412,7 @@ const Meetings = () => {
                     onChange={(e) =>
                       setForm({ ...form, startTime: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700 text-sm"
                   />
                 </div>
                 <div>
@@ -421,14 +425,14 @@ const Meetings = () => {
                     onChange={(e) =>
                       setForm({ ...form, endTime: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700 text-sm"
                   />
                 </div>
               </div>
 
               {/* Geofencing Section */}
-              <div className="border border-slate-200 rounded-xl p-4 space-y-4">
-                <label className="flex items-center gap-3 cursor-pointer">
+              <div className="rounded-xl border border-slate-200 overflow-hidden">
+                <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-50 transition-colors">
                   <input
                     type="checkbox"
                     checked={form.enableGeofence}
@@ -437,25 +441,25 @@ const Meetings = () => {
                     }
                     className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
                   />
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-indigo-500" />
-                    <span className="text-sm font-medium text-slate-700">
+                  <MapPin className="w-4 h-4 text-indigo-500 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-slate-700 block">
                       Enable Geofencing
                     </span>
+                    <span className="text-xs text-slate-400">
+                      Restrict attendance by GPS location
+                    </span>
                   </div>
-                  <span className="text-xs text-slate-400 ml-auto">
-                    Restrict by location
-                  </span>
                 </label>
 
                 {form.enableGeofence && (
-                  <div className="space-y-2 pt-1">
-                    <p className="text-xs text-slate-400">
-                      PR will set the venue location on-site. Enter the allowed
+                  <div className="px-4 pb-4 pt-0 border-t border-slate-100 bg-slate-50/50">
+                    <p className="text-xs text-slate-400 py-3">
+                      PR will set the venue location on-site. Set the allowed
                       radius below.
                     </p>
                     <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">
+                      <label className="block text-xs font-medium text-slate-600 mb-1">
                         Allowed Radius (meters)
                       </label>
                       <input
@@ -466,13 +470,14 @@ const Meetings = () => {
                           setForm({ ...form, allowedRadius: e.target.value })
                         }
                         placeholder="e.g. 500"
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-700 bg-white"
                       />
                     </div>
                   </div>
                 )}
               </div>
 
+              {/* Action Buttons */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
@@ -495,11 +500,12 @@ const Meetings = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* QR Code Modal */}
-      {qrModal && (
+      {qrModal && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-backdrop">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-8 text-center animate-scale-in">
             <div className="flex items-center justify-between mb-4">
@@ -539,7 +545,8 @@ const Meetings = () => {
               Download QR
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

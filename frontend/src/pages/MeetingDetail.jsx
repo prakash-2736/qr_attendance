@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -758,7 +759,7 @@ const MeetingDetail = () => {
       </div>
 
       {/* Fullscreen QR Modal */}
-      {showQR && qrImage && (
+      {showQR && qrImage && createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-backdrop">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-8 text-center relative animate-scale-in">
             <button
@@ -790,7 +791,8 @@ const MeetingDetail = () => {
               Download QR
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
